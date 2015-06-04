@@ -1,0 +1,23 @@
+language: python
+python:
+  - "2.7"
+  - "3.3"
+  - "3.4"
+  - "pypy"
+#  - "pypy3"
+
+# Intall BLAST and build BLASTp dbs
+before_install:
+ - echo "Fetching and installing NCBI BLAST+..."
+ - wget ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.2.30/ncbi-blast-2.2.30+-x64-linux.tar.gz
+ - tar -zxvf ncbi-blast-2.2.30+-x64-linux.tar.gz | tail
+ - export PATH="${TRAVIS_BUILD_DIR}/ncbi-blast-2.2.30+/bin:$PATH"
+ - blastp -h
+ - echo "BLAST installed!"
+ - bash ./testing/makeAABlastDB.sh ./testing/test_files/test_databases/*.faa
+ - ls -l ./testing/test_files/test_databases
+
+# command to install dependencies
+install: "pip install -r requirements.txt"
+# command to run tests
+script: "nosetests -v"
