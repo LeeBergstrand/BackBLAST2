@@ -14,6 +14,7 @@ before_install:
  - tar -zxvf ncbi-blast-2.2.30+-x64-linux.tar.gz | tail
  - export PATH="${TRAVIS_BUILD_DIR}/ncbi-blast-2.2.30+/bin:$PATH"
  - blastp -h
+ - echo "BLAST installed!"
 
 # command to install dependencies
 #install: "pip install -r requirements.txt"
