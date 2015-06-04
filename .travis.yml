@@ -15,8 +15,10 @@ before_install:
  - export PATH="${TRAVIS_BUILD_DIR}/ncbi-blast-2.2.30+/bin:$PATH"
  - blastp -h
  - echo "BLAST installed!"
+ - bash ./testing/makeAABlastDB.sh ./testing/test_files/test_databases/*.faa
+ - ls -l ./testing/test_files/test_databases
 
 # command to install dependencies
-#install: "pip install -r requirements.txt"
+# install: "pip install -r requirements.txt"
 # command to run tests
-#script: "export PYTHONPATH=$PYTHONPATH:$(pwd) && nosetests -v"
+# script: "nosetests -v"
