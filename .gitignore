@@ -56,3 +56,10 @@ docs/_build/
 # PyBuilder
 target/
 .idea
+*.phr
+*.phr
+*.pin
+*.pog
+*.psd
+*.psi
+*.psq

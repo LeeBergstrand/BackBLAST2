@@ -19,6 +19,6 @@ before_install:
  - ls -l ./testing/test_files/test_databases
 
 # command to install dependencies
-# install: "pip install -r requirements.txt"
+install: "pip install -r requirements.txt"
 # command to run tests
-# script: "nosetests -v"
+script: "nosetests -v"
