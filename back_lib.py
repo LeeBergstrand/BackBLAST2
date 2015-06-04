@@ -13,12 +13,16 @@ def run_blastp(query_file, database_file, e_value_cutoff, processes):
 	:param database_file: The amino acid BLAST database location (amino acid FASTA file at this location)
 	:param e_value_cutoff: The e-value cutoff for BLASTp.
 	:param processes: Number of processes for BLASTp to use.
-	:return: A csv formatted BLASTp output (query_sequence_id, subject_sequence_id, percent_identity, e-value, query coverage, bitscore)
+	:return:    A csv formatted BLASTp output (query_sequence_id, subject_sequence_id, percent_identity, e-value,
+				query coverage, bitscore)
 	"""
-	BLASTOut = subprocess.check_output(
+	blast_out = subprocess.check_output(
 		["blastp", "-db", database_file, "-query", query_file, "-evalue", str(e_value_cutoff), "-num_threads",
 		 str(processes), "-outfmt", "10 qseqid sseqid pident evalue qcovhsp bitscore"])
-	return BLASTOut
+
+	# Decodes BLASTp output to UTF-8 (In Py3 check_output returns raw bytes)
+	blast_out = blast_out.decode().replace(' ', '')
+	return blast_out
 
 
 # -------------------------------------------------------------------------------------------------
