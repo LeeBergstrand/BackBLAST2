@@ -33,22 +33,12 @@ class MyTestCase(unittest.TestCase):
 			hit_dict = create_hit_dict(reference_blast_results)
 			first_hit = hit_dict.popitem()[1]
 
-			pass_test = True
-
-			if first_hit.query_seq_id != test_query_seq_id:
-				pass_test = False
-			elif first_hit.sub_seq_id != test_sub_seq_id:
-				pass_test = False
-			elif first_hit.percent_identity != test_percent_identity:
-				pass_test = False
-			elif first_hit.evalue != test_evalue:
-				pass_test = False
-			elif first_hit.coverage != test_coverage:
-				pass_test = False
-			elif first_hit.bitscore != test_bitscore:
-				pass_test = False
-
-			self.assertTrue(pass_test)
+			self.assertTrue(first_hit.query_seq_id == test_query_seq_id)
+			self.assertTrue(first_hit.sub_seq_id == test_sub_seq_id)
+			self.assertTrue(first_hit.percent_identity == test_percent_identity)
+			self.assertTrue(first_hit.evalue == test_evalue)
+			self.assertTrue(first_hit.coverage == test_coverage)
+			self.assertTrue(first_hit.bitscore == test_bitscore)
 
 if __name__ == '__main__':
 	unittest.main()
