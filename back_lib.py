@@ -20,6 +20,7 @@ class HighScoringSegmentPair(object):
 	:var coverage: The amount of aligned sequence overlap between the two proteins.
 	:var bitscore: A score of the quality of alignment between the two proteins which takes into account database size.
 	"""
+
 	def __init__(self, query_seq_id, sub_seq_id, percent_identity, evalue, coverage, bitscore):
 		self.query_seq_id = str(query_seq_id)
 		self.sub_seq_id = str(sub_seq_id)
@@ -33,18 +34,19 @@ class HighScoringSegmentPair(object):
 		hash_md5 = md5(hash_string.encode('utf-8')).hexdigest()  # Create md5 hash.
 		return hash_md5
 
+
 # ==========
 # Functions:
 # ==========
 
 # -------------------------------------------------------------------------------------------------
-def run_blastp(query_file, database_file, e_value_cutoff, processes):
+def run_blastp(query_file, database_file, processes, e_value_cutoff=1e-25):
 	"""
 	Runs BLASTp...
 	:param query_file: The amino acid query FASTA file.
 	:param database_file: The amino acid BLAST database location (amino acid FASTA file at this location)
-	:param e_value_cutoff: The e-value cutoff for BLASTp.
 	:param processes: Number of processes for BLASTp to use.
+	:param e_value_cutoff: The e-value cutoff for BLASTp (Default = 1e-25).
 	:return:    A csv formatted BLASTp output (query_sequence_id, subject_sequence_id, percent_identity, e-value,
 				query coverage, bitscore)
 	"""
@@ -59,6 +61,11 @@ def run_blastp(query_file, database_file, e_value_cutoff, processes):
 
 # -------------------------------------------------------------------------------------------------
 def create_hit_dict(blast_csv_in):
+	"""
+	Creates a dictionary of HSP objects.
+	:param blast_csv_in: CSV formatted multi-line string BLASTp results from the runBLAST method.
+	:return: Dictionary of HSP objects with a md5 hash of each object's attributes as key.
+	"""
 	hit_dict = {}
 
 	blast_csv_in = blast_csv_in.splitlines(True)  # Converts raw BLAST csv output into list of csv rows.
@@ -77,25 +84,50 @@ def create_hit_dict(blast_csv_in):
 
 	return hit_dict
 
-# 3: Filters HSPs by Percent Identity...
-def filter_blast_csv(BLASTOut):
-	minIdent = 25
 
-	BLASTCSVOut = BLASTOut.splitlines(True)  # Converts raw BLAST csv output into list of csv rows.
-	BLASTreader = csv.reader(BLASTCSVOut)  # Reads BLAST csv rows as a csv.
+# -------------------------------------------------------------------------------------------------
+def filter_hsp_dict(raw_hit_dict, percent_identity_cutoff=25, evalue_cutoff=1e-25, coverage_cutoff=50, bitscore_cutoff=0):
+	"""
+	Filters HSP dict by removing HSPs with percent identity, e-value, coverage, or bitscore below a cutoff value.
+	:param raw_hit_dict: Input dictionary of HSP objects.
+	:param percent_identity_cutoff: The percent identity cutoff (Default = 25%).
+	:param evalue_cutoff: The e-value cutoff (Default = 1e-25).
+	:param coverage_cutoff: The percent alignment coverage cutoff (Default = 50%).
+	:param bitscore_cutoff: The bitscore cutoff (Default = 0).
+	:return: A filtered dict of hsp objects.
+	"""
+	filtered_hit_dict = raw_hit_dict
+	return filtered_hit_dict
 
-	BLASTCSVOutFiltred = []  # Note should simply delete unwanted HSPs from current list rather than making new list.
-	# Rather than making a new one.
-	for HSP in BLASTreader:
-		if HSP[2] >= minIdent:  # Filters by minimum identity.
-			# Converts each HSP parameter that should be a number to a number.
-			HSP[2] = float(HSP[2])
-			HSP[3] = float(HSP[3])
-			HSP[4] = float(HSP[4])
-			HSP[5] = float(HSP[5])
-			BLASTCSVOutFiltred.append(HSP)  # Appends to output array.
 
-	return BLASTCSVOutFiltred
+# -------------------------------------------------------------------------------------------------
+def filter_hsp(hsp, percent_identity_cutoff=25, evalue_cutoff=1e-25, coverage_cutoff=50, bitscore_cutoff=0):
+	"""
+	Filters by Percent Identity, e-value, coverage, and bitscore.
+	:param raw_hit_dict: Input dictionary of HSP objects.
+	:param percent_identity_cutoff: The percent identity cutoff (Default = 25%).
+	:param evalue_cutoff: The e-value cutoff (Default = 1e-25).
+	:param coverage_cutoff: The percent alignment coverage cutoff (Default = 50%).
+	:param bitscore_cutoff: The bitscore cutoff (Default = 0).
+	:return: A boolean which indicates whether an HSP should be rejected.
+	"""
+
+	reject = False
+	percent_identity = hsp.percent_identity
+	evalue = hsp.evalue
+	coverage = hsp.coverage
+	bitscore = hsp.bitscore
+
+	if float(percent_identity) < float(percent_identity_cutoff):
+		reject = True
+	elif float(evalue) > float(evalue_cutoff):
+		reject = True
+	elif float(coverage) < float(coverage_cutoff):
+		reject = True
+	elif float(bitscore) < float(bitscore_cutoff):
+		reject = True
+
+	return reject
 
 
 # -------------------------------------------------------------------------------------------------
