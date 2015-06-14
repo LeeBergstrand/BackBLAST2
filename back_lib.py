@@ -86,7 +86,8 @@ def create_hit_dict(blast_csv_in):
 
 
 # -------------------------------------------------------------------------------------------------
-def filter_hsp_dict(raw_hit_dict, percent_identity_cutoff=25, evalue_cutoff=1e-25, coverage_cutoff=50, bitscore_cutoff=0):
+def filter_hsp_dict(raw_hit_dict, percent_identity_cutoff=25, evalue_cutoff=1e-25, coverage_cutoff=50,
+                    bitscore_cutoff=0):
 	"""
 	Filters HSP dict by removing HSPs with percent identity, e-value, coverage, or bitscore below a cutoff value.
 	:param raw_hit_dict: Input dictionary of HSP objects.
@@ -104,7 +105,7 @@ def filter_hsp_dict(raw_hit_dict, percent_identity_cutoff=25, evalue_cutoff=1e-2
 def filter_hsp(hsp, percent_identity_cutoff=25, evalue_cutoff=1e-25, coverage_cutoff=50, bitscore_cutoff=0):
 	"""
 	Filters by Percent Identity, e-value, coverage, and bitscore.
-	:param raw_hit_dict: Input dictionary of HSP objects.
+	:param hsp: Input dictionary of HSP objects.
 	:param percent_identity_cutoff: The percent identity cutoff (Default = 25%).
 	:param evalue_cutoff: The e-value cutoff (Default = 1e-25).
 	:param coverage_cutoff: The percent alignment coverage cutoff (Default = 50%).
@@ -131,17 +132,22 @@ def filter_hsp(hsp, percent_identity_cutoff=25, evalue_cutoff=1e-25, coverage_cu
 
 
 # -------------------------------------------------------------------------------------------------
-# 5: Creates a python dictionary (hash table) that contains the the FASTA for each protein in the proteome.
-def createProteomeHash(ProteomeFile):
-	ProteomeHash = dict()
+def get_proteome_dict(proteome_file):
+	"""
+	Creates a python dictionary (hash table) that contains the the FASTA for each protein in the proteome.
+	:param proteome_file: An input amino acid FASTA file containing the CDS of an organism.
+	:return:    A dictionary of amino acid FASTA sequences containing the CDS of an organism.
+				The sequence ID of each CDS is used as a key.
+	"""
+	proteome_hash = dict()
 	try:
-		handle = open(ProteomeFile, "rU")
+		handle = open(proteome_file, "rU")
 		proteome = SeqIO.parse(handle, "fasta")
 		for record in proteome:
-			ProteomeHash.update({record.id: record.format("fasta")})
+			proteome_hash.update({record.id: record.format("fasta")})
 		handle.close()
 	except IOError:
-		print("Failed to open " + ProteomeFile)
+		print("Failed to open " + proteome_file)
 		sys.exit(1)
 
-	return ProteomeHash
+	return proteome_hash

@@ -1,6 +1,6 @@
 import unittest
 
-from ..back_lib import run_blastp, create_hit_dict, HighScoringSegmentPair, filter_hsp
+from ..back_lib import run_blastp, create_hit_dict, HighScoringSegmentPair, filter_hsp, get_proteome_dict
 import csv
 
 
@@ -42,20 +42,19 @@ class MyTestCase(unittest.TestCase):
 
 	def test_hit_filtering(self):
 
-		hsp_list = []
-		hsp_list.append(HighScoringSegmentPair('ACY320321', 'ACY320320', 24, 1e-40, 60, 400))  # Fail (identity)
-		hsp_list.append(HighScoringSegmentPair('ACY320322', 'ACY320320', 26, 1e-40, 60, 400))  # Pass
-		hsp_list.append(HighScoringSegmentPair('ACY320323', 'ACY320320', 25, 1e-40, 60, 400))  # Pass
-		hsp_list.append(HighScoringSegmentPair('ACY320324', 'ACY320320', 26, 1e-24, 60, 400))  # Fail (evalue)
-		hsp_list.append(HighScoringSegmentPair('ACY320325', 'ACY320320', 26, 1e-26, 60, 400))  # Pass
-		hsp_list.append(HighScoringSegmentPair('ACY320326', 'ACY320320', 26, 1e-25, 60, 400))  # Pass
-		hsp_list.append(HighScoringSegmentPair('ACY320326', 'ACY320320', 26, 0, 60, 400))      # Pass
-		hsp_list.append(HighScoringSegmentPair('ACY320327', 'ACY320320', 26, 1e-40, 49, 400))  # Fail (coverage)
-		hsp_list.append(HighScoringSegmentPair('ACY320328', 'ACY320320', 26, 1e-40, 50, 400))  # Pass
-		hsp_list.append(HighScoringSegmentPair('ACY320329', 'ACY320320', 26, 1e-40, 51, 400))  # Pass
-		hsp_list.append(HighScoringSegmentPair('ACY320330', 'ACY320320', 26, 1e-40, 60, 299))  # Fail (bitscore)
-		hsp_list.append(HighScoringSegmentPair('ACY320331', 'ACY320320', 26, 1e-40, 60, 300))  # Pass
-		hsp_list.append(HighScoringSegmentPair('ACY320332', 'ACY320320', 26, 1e-40, 60, 301))  # Pass
+		hsp_list = [HighScoringSegmentPair('ACY320321', 'ACY320320', 24, 1e-40, 60, 400),
+		            HighScoringSegmentPair('ACY320322', 'ACY320320', 26, 1e-40, 60, 400),
+		            HighScoringSegmentPair('ACY320323', 'ACY320320', 25, 1e-40, 60, 400),
+		            HighScoringSegmentPair('ACY320324', 'ACY320320', 26, 1e-24, 60, 400),
+		            HighScoringSegmentPair('ACY320325', 'ACY320320', 26, 1e-26, 60, 400),
+		            HighScoringSegmentPair('ACY320326', 'ACY320320', 26, 1e-25, 60, 400),
+		            HighScoringSegmentPair('ACY320326', 'ACY320320', 26, 0, 60, 400),
+		            HighScoringSegmentPair('ACY320327', 'ACY320320', 26, 1e-40, 49, 400),
+		            HighScoringSegmentPair('ACY320328', 'ACY320320', 26, 1e-40, 50, 400),
+		            HighScoringSegmentPair('ACY320329', 'ACY320320', 26, 1e-40, 51, 400),
+		            HighScoringSegmentPair('ACY320330', 'ACY320320', 26, 1e-40, 60, 299),
+		            HighScoringSegmentPair('ACY320331', 'ACY320320', 26, 1e-40, 60, 300),
+		            HighScoringSegmentPair('ACY320332', 'ACY320320', 26, 1e-40, 60, 301)]
 
 		fail_accessions = ['ACY320321', 'ACY320324', 'ACY320327', 'ACY320330']
 
@@ -66,6 +65,17 @@ class MyTestCase(unittest.TestCase):
 			else:
 				self.assertNotIn(hsp.query_seq_id, fail_accessions)
 
+	def test_get_proteome_dict(self):
+		test_fasta_path = "./testing/test_files/test_databases/CP001220.1.faa"
+		with open(test_fasta_path, 'r') as test_fasta:
+			test_accession = test_fasta.readline().rsplit()[0].replace('>', '')
+			test_line = test_fasta.readline()
+
+			proteome_dict = get_proteome_dict(test_fasta_path)
+			returned_test_fasta = proteome_dict[test_accession]
+			test_fasta_line = returned_test_fasta.splitlines()[1]
+
+			self.assertIn(test_fasta_line, test_line)
 
 if __name__ == '__main__':
 	unittest.main()
