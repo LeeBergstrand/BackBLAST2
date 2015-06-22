@@ -20,7 +20,7 @@ except AttributeError:
 		return iter(d.items())
 else:
 	# Python 2
-    def itervalues(d):
+	def itervalues(d):
 		return d.itervalues()
 
 	def iteritems(d):
