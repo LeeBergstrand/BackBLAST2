@@ -4,6 +4,28 @@ import sys
 from hashlib import md5
 from Bio import SeqIO
 
+# ==============================
+# Python 2/3 Compatibility Code:
+# ==============================
+
+# Creates custom functions for Python2/3 dictionary iteration.
+try:
+	dict.iteritems
+except AttributeError:
+	# Python 3
+	def itervalues(d):
+		return iter(d.values())
+
+	def iteritems(d):
+		return iter(d.items())
+else:
+	# Python 2
+    def itervalues(d):
+		return d.itervalues()
+
+	def iteritems(d):
+		return d.iteritems()
+
 # ==========
 # Classes:
 # ==========
@@ -97,8 +119,14 @@ def filter_hsp_dict(raw_hit_dict, percent_identity_cutoff=25, evalue_cutoff=1e-2
 	:param bitscore_cutoff: The bitscore cutoff (Default = 0).
 	:return: A filtered dict of hsp objects.
 	"""
-	filtered_hit_dict = raw_hit_dict
-	return filtered_hit_dict
+
+	filtered_hsp_dict = {}
+
+	for key, hsp in iteritems(raw_hit_dict):
+		if not filter_hsp(hsp, percent_identity_cutoff, evalue_cutoff, coverage_cutoff, bitscore_cutoff):
+			filtered_hsp_dict[key] = hsp
+
+	return filtered_hsp_dict
 
 
 # -------------------------------------------------------------------------------------------------
