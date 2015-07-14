@@ -1,3 +1,18 @@
+#!/usr/bin/env python
+
+"""
+Created by: Lee Bergstrand (2015)
+
+Description: Tests for the BackBLAST reciprocal BLAST program.
+
+Requirements:
+              - This script requires BLAST+ 2.2.9 or later.
+              - All operations are to be done with protein sequences.
+              - All query proteins should be from sequenced genomes in order to facilitate reciprocal BLASTp.
+              - MakeAABlastDB must be used to create BLASTn databases for both query and subject proteomes.
+              - BLASTp requires that the FASTA file the subject database remain in the same directory as the database.
+"""
+
 import unittest
 
 from ..back_lib import run_blastp, create_hit_dict, HighScoringSegmentPair, filter_hsp, get_proteome_dict, \

@@ -1,3 +1,14 @@
+#!/usr/bin/env python
+
+"""
+Created by: Lee Bergstrand (2015)
+
+Description: Python library for the BackBLAST reciprocal BLAST program.
+
+Requirements: - This program requires the Biopython module: http://biopython.org/wiki/Download
+              - All operations are to be done with protein sequences.
+"""
+
 import csv
 import subprocess
 import sys
